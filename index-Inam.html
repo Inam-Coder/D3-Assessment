@@ -1,0 +1,154 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="utf-8">
+    <script type ="text/javascript" src="d3.v4.js"></script>
+    <style>
+        body {
+             background: #4a1c93; 
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+        .towns{
+            fill: rgba(97, 210, 17, 0.74);
+        stroke: rgb(208, 208, 208);
+        stroke-width: 1px;
+        }
+
+
+.country{
+    stroke: #0cabcf5d;
+        stroke-width: 0.5;
+}
+
+.texta{
+    font-family: 'Comic Sans MS', 'Papyrus', sans-serif;
+	font-size: 32px;
+	font-weight: bold;
+	fill: red;
+}
+
+    </style>
+</head>
+
+
+
+<body>
+    <div id='container'>
+        
+        <svg id='canvas'>
+        </svg>
+
+        <div id="description">
+             <h2 style="color:rgb(81, 255, 0) ;" id='title'>United Kingdom Countries & Population</h2>
+            
+			 <hr>
+             <h1>In the Bottom slider and Reloder Button</h1>
+        
+                              
+    </div>
+<div id="map">
+    
+</div>
+
+
+<div class="row g-3 mt-4">
+<div class="col-md-12">
+<label for="sliderId"   style="color:rgb(214, 15, 19);"  class="form-label fw-bold"> Increase Cities</label>
+<input type="range" id="sliderId" class="form-range"  min="0" max="20" step="5" value="0">
+<h1 id="demo"  style="color: rgb(180, 37, 37);"></h1>
+
+</div>
+
+</div>
+
+<script>
+ var margin = {top: 0, left:0,right:0,bottom:0},
+ height = 950,
+ width = 950;
+ 
+
+
+ var svg = d3.select("#map")
+ 
+ .append("svg")
+ 
+ .attr("height", height)
+ .attr("width", width)
+ .append("g")
+ .attr("id","svg_id")
+ 
+ function GB(value) {
+var prjctn = d3.geoNaturalEarth1()
+.translate([width/2, height/2])
+ .scale(3400)
+ .center([-9, 58])
+var path = d3.geoPath().projection(prjctn);
+
+ d3.json('https://yamu.pro/gb.json', function(error, data) {
+console.log(data);
+
+svg.selectAll("POP")
+.data(data.features)
+.enter().append("path")
+.attr("fill","Red")
+.attr("class","country")
+.attr("d",path)
+.append('title')
+.text("Great Britain");
+ });
+
+ 
+
+const topjson = 'http://34.78.46.186/Circles/Towns/'
+ d3.json(topjson + value, function(error, data) {
+console.log(data);
+svg.selectAll('.towns')
+.data(data)
+.enter().append('circle')
+
+.attr("class","towns")
+
+.attr("r", 5)
+.attr("cx",function(d){
+    console.log(d);
+    var coords = prjctn([d.lng, d.lat])
+    return coords[0];
+})
+.attr("cy",function(d){
+    var coords = prjctn([d.lng, d.lat])
+    return coords[1]
+})
+.append("title")
+.text((d) => d.County);
+ });
+
+
+
+
+
+
+var rangeslider = document.getElementById("sliderId");
+var mapDiv = document.getElementById("svg_id");
+var output = document.getElementById("demo");
+output.innerHTML = rangeslider.value;
+rangeslider.oninput = function() {
+  output.innerHTML = this.value;
+  mapDiv.innerHTML = "";
+  GB(this.value);
+
+}
+ }
+
+window.onload =  GB(0);
+
+</script>
+
+</body>
+</html>
+<button  class="fa fa-refresh"  style="font-size:48px;color:red "   onclick="window.location.reload()">Reload</button>
+
+
